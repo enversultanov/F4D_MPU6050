@@ -1,0 +1,42 @@
+//  while(1){
+//      cnt++;
+//      time_now = HAL_GetTick();
+//      BSP_LED_Toggle(LED5);
+//      trace_printf("......\n");
+//
+//      time_sum = time_sum+(time_now-time_old);
+//      time_old = time_now;
+//      cnt++;
+//
+//      if(cnt==100){
+//	  trace_printf("%u\n", (time_sum/100) );
+//	  time_sum = 0;
+//	  cnt=0;
+//      }
+
+//      if(time_now-time_old > 1000){
+//          trace_printf("%u\n", cnt );
+//          time_old = time_now;
+//          cnt=0;
+//      }
+//  }
+
+
+
+//  uint32_t seconds = 0, time_now=0, time_old=0;
+//
+//  // Infinite loop
+//  while (1)
+//    {
+//
+//      time_now = HAL_GetTick();
+//      if((time_now-time_old) >= 500){
+//	  BSP_LED_Toggle(LED4);
+//
+//	  ++seconds;
+//	  // Count seconds on the trace device.
+//	  trace_printf("Second %u\n", seconds);
+//	  time_old = time_now;
+//      }
+//    }
+  // Infinite loop, never return.

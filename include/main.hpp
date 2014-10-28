@@ -14,9 +14,8 @@
 #include "i2c.hpp"
 #include "stm32f4xx_hal.h"
 #include "stm32f4_discovery.h"
-//#include "helper_3dmath.h"
-//#include "MPU6050.h"
 #include "MPU6050_6Axis_MotionApps20.h"
+#include "uart.hpp"
 
 
 /* Setup declared in "MPU6050_DMP6.cpp" file */

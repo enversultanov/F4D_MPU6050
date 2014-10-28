@@ -154,18 +154,8 @@ volatile bool mpuInterrupt = false;     // indicates whether MPU interrupt pin h
 void dmpDataReady();
 
 void dmpDataReady() {
-
-//  cnt++;
-//  time_now = HAL_GetTick();
-//
-//  if(time_now-time_old > 1000){
-//      trace_printf("%u\n", cnt );
-//      time_old = time_now;
-//      cnt=0;
-//
-//  }
-
   mpuInterrupt = true;
+//  UART_TX((uint8_t*)"In_the_interrupt_callback\r\n", sizeof("\r\n"));
 }
 
 void setup();
@@ -232,9 +222,11 @@ main(int argc, char* argv[])
 
   // At this stage the system clock should have already been configured
   // at high speed.
-  trace_printf("System clock: %uHz\n", SystemCoreClock);
+//  trace_printf("System clock: %uHz\n", SystemCoreClock);
 
+  UART_Init();
 
+  UART_TX((uint8_t*)"UART Initialized!\n", sizeof("UART Initialized!\n"));
 
   I2C_Init();
 
@@ -284,10 +276,10 @@ void setup() {
 
     mpu.initialize();
 
-    trace_printf(mpu.testConnection() ? ("MPU6050 connection successful\n") : ("MPU6050 connection failed\n"));
+//    trace_printf(mpu.testConnection() ? ("MPU6050 connection successful\n") : ("MPU6050 connection failed\n"));
 
     // load and configure the DMP
-    trace_printf("Initializing DMP...\n");
+//    trace_printf("Initializing DMP...\n");
     devStatus = mpu.dmpInitialize();
 
     // supply your own gyro offsets here, scaled for min sensitivity
@@ -299,14 +291,14 @@ void setup() {
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
         // turn on the DMP, now that it's ready
-	trace_printf("Enabling DMP...\n");
+//	trace_printf("Enabling DMP...\n");
         mpu.setDMPEnabled(true);
 
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
-        trace_printf("DMP ready! Waiting for first interrupt...\n");
-        trace_printf("System is running!\n");
+//        trace_printf("DMP ready! Waiting for first interrupt...\n");
+//        trace_printf("System is running!\n");
         dmpReady = true;
 
         // get expected DMP packet size for later comparison
@@ -316,8 +308,8 @@ void setup() {
         // 1 = initial memory load failed
         // 2 = DMP configuration updates failed
         // (if it's going to break, usually the code will be 1)
-	trace_printf("DMP Initialization failed (code \n");
-	trace_printf("%d\n", devStatus);
+//	trace_printf("DMP Initialization failed (code \n");
+//	trace_printf("%d\n", devStatus);
     }
 }
 
@@ -340,8 +332,23 @@ void loop() {
     while (!mpuInterrupt && fifoCount < packetSize) {
 
 
-    if((ypr[0]* 180/M_PI) >10){BSP_LED_On(LED6);}
-    if((ypr[0]* 180/M_PI)<0){BSP_LED_Off(LED6);}
+	char buf[8];
+
+	UART_TX((uint8_t *)"The value of Pi is=\t", sizeof("The value of Pi is=\t"));
+
+//	f = ypr[0] * 180/M_PI;
+	float f = 3.1415;
+        sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
+        UART_TX((uint8_t *)buf, sizeof(buf));
+
+
+//	f = ypr[1] * 180/M_PI;
+//        sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
+//        UART_TX((uint8_t *)buf, sizeof(buf));
+
+
+	if((ypr[0]* 180/M_PI) >10){BSP_LED_On(LED6);}
+	if((ypr[0]* 180/M_PI)<0){BSP_LED_Off(LED6);}
         // other program behavior stuff here
         // .
         // .
@@ -375,12 +382,10 @@ void loop() {
         // reset so we can continue cleanly
         mpu.resetFIFO();
 //        trace_printf("FIFO overflow!");
-        BSP_LED_Toggle(LED5);
-
 
     }
     // otherwise, check for DMP data ready interrupt (this should happen frequently)
-    else if (mpuIntStatus & 0x01) {
+    else if (mpuIntStatus & 0x02) {
         // wait for correct available data length, should be a VERY short wait
         while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
 
@@ -416,19 +421,28 @@ void loop() {
             Serial.println(euler[2] * 180/M_PI);
         #endif
 
-//    	time_now = HAL_GetTick();
-
         #ifdef OUTPUT_READABLE_YAWPITCHROLL
             // display Euler angles in degrees
             mpu.dmpGetQuaternion(&q, fifoBuffer);
             mpu.dmpGetGravity(&gravity, &q);
             mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
 //            trace_printf("ypr\t");
-//            trace_printf("%d", ypr[0] * 180/M_PI);
+//            trace_printf("%f", ypr[0] * 180/M_PI);
 //            trace_printf("\t");
 //            trace_printf("%d", ypr[1] * 180/M_PI);
 //            trace_printf("\t");
 //            trace_printf("%d\n", ypr[2] * 180/M_PI);
+
+//            char buf[8];
+//            float f = ypr[0] * 180/M_PI;
+//            float f = 3.1415;
+//            sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 100)) );
+//
+////            UART_Float_TX((double*)&(ypr[0] * 180/M_PI));
+//
+////            snprintf(uart_buffer, 100, "\r\n%u", 3);
+//            UART_TX((uint8_t *)buf, sizeof(buf));
+
         #endif
 
         #ifdef OUTPUT_READABLE_REALACCEL

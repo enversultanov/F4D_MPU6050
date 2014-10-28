@@ -178,6 +178,30 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles DMA interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to DMA stream
+  *         used for USART data transmission
+  */
+void USARTx_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(UartHandle.hdmarx);
+}
+
+/**
+  * @brief  This function handles DMA interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to DMA stream
+  *         used for USART data reception
+  */
+void USARTx_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(UartHandle.hdmatx);
+}
+
+/**
   * @brief  This function handles PPP interrupt request.
   * @param  None
   * @retval None

@@ -122,8 +122,6 @@ uint32_t time_now=0,time_old=0,time_sum=0,cnt=0;
 // format used for the InvenSense teapot demo
 //#define OUTPUT_TEAPOT
 
-
-
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
 uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
@@ -155,7 +153,6 @@ void dmpDataReady();
 
 void dmpDataReady() {
   mpuInterrupt = true;
-//  UART_TX((uint8_t*)"In_the_interrupt_callback\r\n", sizeof("\r\n"));
 }
 
 void setup();
@@ -206,7 +203,7 @@ void loop();
 
 int
 main(int argc, char* argv[])
-{
+ {
   // Show the program parameters (passed via semihosting).
   // Output is via the semihosting output channel.
 //  trace_dump_args(argc, argv);
@@ -227,10 +224,19 @@ main(int argc, char* argv[])
   UART_Init();
 
   UART_TX((uint8_t*)"UART Initialized!\n", sizeof("UART Initialized!\n"));
-
   I2C_Init();
-
   setup();
+
+//  while(1){
+//      //UART_TX((uint8_t*)"UART sending dummy MSG! \r\n", sizeof("UART sending dummy MSG! \r\n"));
+//      char buf[100]={0};
+//      float f = 3.1415;
+////      sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
+//      UART_TX((uint8_t *)buf, sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000))));
+//      UART_Float_TX(3.1415);
+//  }
+
+
 
   loop();
 
@@ -327,24 +333,22 @@ void loop() {
 
     BSP_LED_Off(LED5);
 
+    UART_TX((uint8_t*)"x=", sizeof("x="));
+    UART_Float_TX( (ypr[2] * 180/M_PI) );
+
+    UART_TX((uint8_t*)"y=", sizeof("y="));
+    UART_Float_TX( (ypr[1] * 180/M_PI) );
+
+    UART_TX((uint8_t*)"z=", sizeof("z="));
+    UART_Float_TX( (ypr[0] * 180/M_PI) );
+    UART_TX((uint8_t*)"\n\r", sizeof("\n\r"));
+
 
     // wait for MPU interrupt or extra packet(s) available
     while (!mpuInterrupt && fifoCount < packetSize) {
 
-
-	char buf[8];
-
-	UART_TX((uint8_t *)"The value of Pi is=\t", sizeof("The value of Pi is=\t"));
-
-//	f = ypr[0] * 180/M_PI;
-	float f = 3.1415;
-        sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
-        UART_TX((uint8_t *)buf, sizeof(buf));
-
-
-//	f = ypr[1] * 180/M_PI;
 //        sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
-//        UART_TX((uint8_t *)buf, sizeof(buf));
+
 
 
 	if((ypr[0]* 180/M_PI) >10){BSP_LED_On(LED6);}

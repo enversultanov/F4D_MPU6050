@@ -30,7 +30,7 @@ I2C_HandleTypeDef I2cHandle;
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
+void Error_Handler(void)
 {
   /* Turn LED5 on */
   BSP_LED_On(LED5);
@@ -43,7 +43,7 @@ void I2C_Init(void){
   /*##-1- Configure the I2C peripheral ######################################*/
   I2cHandle.Instance             = I2Cx;
 
-  I2cHandle.Init.AddressingMode  = I2C_ADDRESSINGMODE_10BIT;
+  I2cHandle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
   I2cHandle.Init.ClockSpeed      = 400000;
   I2cHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
   I2cHandle.Init.DutyCycle       = I2C_DUTYCYCLE_16_9;
@@ -62,7 +62,7 @@ void I2C_Init(void){
 /** @defgroup HAL_MSP_Private_Functions
   * @{
   */
-
+extern "C" {
 /**
   * @brief I2C MSP Initialization
   *        This function configures the hardware resources used in this example:
@@ -120,6 +120,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
   HAL_GPIO_DeInit(I2Cx_SCL_GPIO_PORT, I2Cx_SCL_PIN);
   /* Configure I2C Rx as alternate function  */
   HAL_GPIO_DeInit(I2Cx_SDA_GPIO_PORT, I2Cx_SDA_PIN);
+}
 }
 
 /** Default constructor.

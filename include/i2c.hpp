@@ -39,6 +39,7 @@
 /* Exported functions ------------------------------------------------------- */
 static void Error_Handler(void);
 
+
 void I2C_Init(void);
 
 /* Memory adress size define ------------------------------------------------ */

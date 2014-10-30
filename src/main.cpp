@@ -64,7 +64,8 @@ MPU6050 accelgyro;
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
 
-uint32_t time_now=0,time_old=0,time_sum=0,cnt=0;
+uint32_t time_now=0,time_old=0,time_sum=0;
+uint32_t cnt=0;
 
 
 /* =========================================================================
@@ -153,6 +154,7 @@ void dmpDataReady();
 
 void dmpDataReady() {
   mpuInterrupt = true;
+  BSP_LED_Toggle(LED3);
 }
 
 void setup();
@@ -204,52 +206,19 @@ void loop();
 int
 main(int argc, char* argv[])
  {
-  // Show the program parameters (passed via semihosting).
-  // Output is via the semihosting output channel.
-//  trace_dump_args(argc, argv);
-
-  // Send a greeting to the trace device (skipped on Release).
-//  trace_puts("Hello ARM World!");
-
-  // Send a message to the standard output.
-//  puts("Standard output message.");
-
-//  // Send a message to the standard error.
-//  fprintf(stderr, "Standard error message.\n");
-
-  // At this stage the system clock should have already been configured
-  // at high speed.
-//  trace_printf("System clock: %uHz\n", SystemCoreClock);
-
   UART_Init();
 
   UART_TX((uint8_t*)"UART Initialized!\n", sizeof("UART Initialized!\n"));
+
   I2C_Init();
+
   setup();
 
-//  while(1){
-//      //UART_TX((uint8_t*)"UART sending dummy MSG! \r\n", sizeof("UART sending dummy MSG! \r\n"));
-//      char buf[100]={0};
-//      float f = 3.1415;
-////      sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
-//      UART_TX((uint8_t *)buf, sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000))));
-//      UART_Float_TX(3.1415);
-//  }
-
-
+  // if programming failed, don't try to do anything
+  while (!dmpReady){}
 
   loop();
 
-}
-
-/**
-  * @brief EXTI line detection callbacks
-  * @param GPIO_Pin: Specifies the pins connected EXTI line
-  * @retval None
-  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  dmpDataReady();
 }
 
 #pragma GCC diagnostic pop
@@ -260,26 +229,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 // ================================================================
 
 void setup() {
-//    accelgyro.initialize();
-//
-//    accelgyro.setXGyroOffset(220);
-//    accelgyro.setYGyroOffset(76);
-//    accelgyro.setZGyroOffset(-85);
-//
-//    while(1){
-//      // read raw accel/gyro measurements from device
-//      accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-//
-//      // display tab-separated accel/gyro x/y/z values
-//      trace_printf("a/g:\t");
-//      trace_printf("%d",ax); trace_printf("\t");
-//      trace_printf("%d",ay); trace_printf("\t");
-//      trace_printf("%d",az); trace_printf("\t");
-//      trace_printf("%d",gx); trace_printf("\t");
-//      trace_printf("%d",gy); trace_printf("\t");
-//      trace_printf("%d\n",gz);
-//    }
-
     mpu.initialize();
 
 //    trace_printf(mpu.testConnection() ? ("MPU6050 connection successful\n") : ("MPU6050 connection failed\n"));
@@ -327,32 +276,34 @@ void setup() {
 
 void loop() {
   while(1){
-      time_now = HAL_GetTick();
-    // if programming failed, don't try to do anything
-    if (!dmpReady) return;
-
-    BSP_LED_Off(LED5);
-
-    UART_TX((uint8_t*)"x=", sizeof("x="));
-    UART_Float_TX( (ypr[2] * 180/M_PI) );
-
-    UART_TX((uint8_t*)"y=", sizeof("y="));
-    UART_Float_TX( (ypr[1] * 180/M_PI) );
-
-    UART_TX((uint8_t*)"z=", sizeof("z="));
-    UART_Float_TX( (ypr[0] * 180/M_PI) );
-    UART_TX((uint8_t*)"\n\r", sizeof("\n\r"));
-
-
     // wait for MPU interrupt or extra packet(s) available
     while (!mpuInterrupt && fifoCount < packetSize) {
 
-//        sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
+	cnt++;
+	time_now = HAL_GetTick();
+	if((time_now-time_old) >= 1000){
+	    if(mpuInterrupt)break;
+	    time_old = time_now;
+	    char buffer[10]={0};
+	    if(mpuInterrupt)break;
+	      UART_TX((uint8_t *)buffer, sprintf(buffer,"%u\r\n", (int)cnt ));
+	    UART_TX((uint8_t*)"\r\n", sizeof("\r\n"));
+	    cnt=0;
+	}
 
+//	UART_TX((uint8_t*)"x=", sizeof("x="));
+//	UART_Float_TX( (ypr[2] * 180/M_PI) );
+//
+//	UART_TX((uint8_t*)"y=", sizeof("y="));
+//	UART_Float_TX( (ypr[1] * 180/M_PI) );
+//
+//	UART_TX((uint8_t*)"z=", sizeof("z="));
+//	UART_Float_TX( (ypr[0] * 180/M_PI) );
+//	UART_TX((uint8_t*)"\n\r", sizeof("\n\r"));
 
+	BSP_LED_Toggle(LED4);
+//	   UART_TX((uint8_t*)"MAIN\r\n", sizeof("MAIN\r\n"));
 
-	if((ypr[0]* 180/M_PI) >10){BSP_LED_On(LED6);}
-	if((ypr[0]* 180/M_PI)<0){BSP_LED_Off(LED6);}
         // other program behavior stuff here
         // .
         // .
@@ -363,15 +314,6 @@ void loop() {
         // .
         // .
         // .
-//       time_sum = time_sum+(time_now-time_old);
-//       time_old = time_now;
-//       cnt++;
-//
-//       if(cnt==1000){
-//	trace_printf("%u\n", (time_sum/1000) );
-//	time_sum = 0;
-//	cnt=0;
-//       }
     }
 
     // reset interrupt flag and get INT_STATUS byte
@@ -382,14 +324,15 @@ void loop() {
     fifoCount = mpu.getFIFOCount();
 
     // check for overflow (this should never happen unless our code is too inefficient)
-    if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
+    if ((mpuIntStatus == 0x10) || fifoCount == 1024) {
         // reset so we can continue cleanly
         mpu.resetFIFO();
-//        trace_printf("FIFO overflow!");
-
+        UART_TX((uint8_t*)"FIFO Overflow\r\n", sizeof("FIFO Overflow\r\n"));
+        BSP_LED_Toggle(LED5);
     }
+
     // otherwise, check for DMP data ready interrupt (this should happen frequently)
-    else if (mpuIntStatus & 0x02) {
+    else if(mpuIntStatus == 0x01) {
         // wait for correct available data length, should be a VERY short wait
         while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
 
@@ -436,16 +379,6 @@ void loop() {
 //            trace_printf("%d", ypr[1] * 180/M_PI);
 //            trace_printf("\t");
 //            trace_printf("%d\n", ypr[2] * 180/M_PI);
-
-//            char buf[8];
-//            float f = ypr[0] * 180/M_PI;
-//            float f = 3.1415;
-//            sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 100)) );
-//
-////            UART_Float_TX((double*)&(ypr[0] * 180/M_PI));
-//
-////            snprintf(uart_buffer, 100, "\r\n%u", 3);
-//            UART_TX((uint8_t *)buf, sizeof(buf));
 
         #endif
 
@@ -494,9 +427,17 @@ void loop() {
         #endif
 
         // blink LED to indicate activity
-       BSP_LED_Toggle(LED3);
-
-
+//       BSP_LED_Toggle(LED3);
     }
   }
+}
+
+/**
+  * @brief EXTI line detection callbacks
+  * @param GPIO_Pin: Specifies the pins connected EXTI line
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  dmpDataReady();
 }

@@ -54,7 +54,8 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* UART handler declared in "uart.cpp" file */
-extern UART_HandleTypeDef UartHandle;
+//extern UART_HandleTypeDef UartHandle;
+//void dmpDataReady();
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/

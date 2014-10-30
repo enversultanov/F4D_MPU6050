@@ -160,7 +160,7 @@ void EXTILine0_Config(void)
   __GPIOE_CLK_ENABLE();
 
   /* Configure PA0 pin as input floating */
-  GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStructure.Pull = GPIO_NOPULL;
   GPIO_InitStructure.Pin = GPIO_PIN_0;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);

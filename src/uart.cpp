@@ -243,7 +243,7 @@ void UART_Float_TX(float f){
   char buf[10]={0};
   //      float f = 3.1415;
   ////      sprintf(buf,"%d.%02u\r\n", (int)f , ((int) (((f)-(int)f) * 10000)));
-  UART_TX((uint8_t *)buf, sprintf(buf,"%d.%02u\t", (int)f , ((int) (((f)-(int)f) * 10))));
+  UART_TX((uint8_t *)buf, sprintf(buf,"%d.%02u\t", (int)f , ((int) (((f)-(int)f) * 10000))));
 
 //  if(HAL_UART_Transmit(&UartHandle, (uint8_t*)str, c, 5000)!= HAL_OK)
 //  {

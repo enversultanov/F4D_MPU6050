@@ -27,8 +27,4 @@
 /* loop declared in "MPU6050_DMP6.cpp" file */
 //extern void loop();
 
-//float x_angle=0;
-//float y_angle=0;
-//float z_angle=0;
-
 #endif /* MAIN_HPP_ */

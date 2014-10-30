@@ -379,7 +379,7 @@ uint8_t MPU6050::dmpInitialize() {
             setClockSource(MPU6050_CLOCK_PLL_ZGYRO);
 
 //            DEBUG_PRINTLN(F("Setting DMP and FIFO_OFLOW interrupts enabled..."));
-            setIntEnabled(0x12);	//TODO Should ne 0x11??
+            setIntEnabled(0x11);	//TODO Should ne 0x11??
 
 //            DEBUG_PRINTLN(F("Setting sample rate to 200Hz..."));
             setRate(4); // 1khz / (1 + 4) = 200 Hz

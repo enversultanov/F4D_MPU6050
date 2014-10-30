@@ -40,3 +40,25 @@
 //      }
 //    }
   // Infinite loop, never return.
+  
+  
+  
+  //    accelgyro.initialize();
+//
+//    accelgyro.setXGyroOffset(220);
+//    accelgyro.setYGyroOffset(76);
+//    accelgyro.setZGyroOffset(-85);
+//
+//    while(1){
+//      // read raw accel/gyro measurements from device
+//      accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+//
+//      // display tab-separated accel/gyro x/y/z values
+//      trace_printf("a/g:\t");
+//      trace_printf("%d",ax); trace_printf("\t");
+//      trace_printf("%d",ay); trace_printf("\t");
+//      trace_printf("%d",az); trace_printf("\t");
+//      trace_printf("%d",gx); trace_printf("\t");
+//      trace_printf("%d",gy); trace_printf("\t");
+//      trace_printf("%d\n",gz);
+//    }

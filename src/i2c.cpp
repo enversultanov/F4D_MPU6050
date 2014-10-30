@@ -40,6 +40,8 @@ void Error_Handler(void)
 }
 
 void I2C_Init(void){
+  //HAL_I2C_DeInit(&I2cHandle);
+
   /*##-1- Configure the I2C peripheral ######################################*/
   I2cHandle.Instance             = I2Cx;
 
@@ -433,3 +435,4 @@ bool I2Cdev::writeBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint
         return false;
     }
 }
+

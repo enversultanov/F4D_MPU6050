@@ -166,7 +166,7 @@ void EXTILine0_Config(void)
   HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
 
   /* Enable and set EXTI Line0 Interrupt to the lowest priority */
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0x0F, 0x0F);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
 

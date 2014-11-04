@@ -153,7 +153,32 @@ volatile bool mpuInterrupt = false;     // indicates whether MPU interrupt pin h
 void dmpDataReady();
 
 void dmpDataReady() {
+  //char buf[10]={0};
+
+  time_now = HAL_GetTick();
+
+  if((time_now-time_old)>500){
+      BSP_LED_Toggle(LED4);
+      time_old=time_now;
+  }
+
+  //time_now=HAL_GetTick();
   mpuInterrupt = true;
+
+//  if((HAL_GetTick()-time_old)>500){
+//      BSP_LED_Toggle(LED4);
+//      time_old=HAL_GetTick();
+//  }
+
+
+//  char buf[10]={0};
+//
+//  UART_TX((uint8_t *)buf, sprintf(buf,"%u\r\n", HAL_GetTick()));
+
+  //time_old = time_now-HAL_GetTick();
+  //UART_TX((uint8_t *)buf, sprintf(buf,"%u\r\n", HAL_GetTick()));
+
+
   BSP_LED_Toggle(LED3);
 }
 
@@ -206,13 +231,21 @@ void loop();
 int
 main(int argc, char* argv[])
  {
+
   UART_Init();
 
   UART_TX((uint8_t*)"UART Initialized!\n", sizeof("UART Initialized!\n"));
 
+
   I2C_Init();
 
   setup();
+
+//  while(1){
+//      char buf[10]={0};
+//
+//      UART_TX((uint8_t *)buf, sprintf(buf,"%u\r\n", HAL_GetTick()));
+//  }
 
   // if programming failed, don't try to do anything
   while (!dmpReady){}
@@ -276,20 +309,24 @@ void setup() {
 
 void loop() {
   while(1){
+    mpuInterrupt = false;
+
+//    char buf[10]={0};
+//
+//    UART_TX((uint8_t *)buf, sprintf(buf,"%u\r\n", HAL_GetTick()));
+
     // wait for MPU interrupt or extra packet(s) available
     while (!mpuInterrupt && fifoCount < packetSize) {
 
-	cnt++;
-	time_now = HAL_GetTick();
-	if((time_now-time_old) >= 1000){
-	    if(mpuInterrupt)break;
-	    time_old = time_now;
-	    char buffer[10]={0};
-	    if(mpuInterrupt)break;
-	      UART_TX((uint8_t *)buffer, sprintf(buffer,"%u\r\n", (int)cnt ));
-	    UART_TX((uint8_t*)"\r\n", sizeof("\r\n"));
-	    cnt=0;
-	}
+//	cnt++;
+//	time_now = HAL_GetTick();
+//	if((time_now-time_old) >= 1000){
+//	    time_old = time_now;
+//	    char buffer[10]={0};
+//	    UART_TX((uint8_t *)buffer, sprintf(buffer,"%u\r\n", (int)cnt ));
+//	    UART_TX((uint8_t*)"\r\n", sizeof("\r\n"));
+//	    cnt=0;
+//	}
 
 //	UART_TX((uint8_t*)"x=", sizeof("x="));
 //	UART_Float_TX( (ypr[2] * 180/M_PI) );
@@ -301,7 +338,7 @@ void loop() {
 //	UART_Float_TX( (ypr[0] * 180/M_PI) );
 //	UART_TX((uint8_t*)"\n\r", sizeof("\n\r"));
 
-	BSP_LED_Toggle(LED4);
+//	BSP_LED_Toggle(LED4);
 //	   UART_TX((uint8_t*)"MAIN\r\n", sizeof("MAIN\r\n"));
 
         // other program behavior stuff here
@@ -317,7 +354,6 @@ void loop() {
     }
 
     // reset interrupt flag and get INT_STATUS byte
-    mpuInterrupt = false;
     mpuIntStatus = mpu.getIntStatus();
 
     // get current FIFO count
@@ -439,5 +475,11 @@ void loop() {
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+
+//  UART_TX((uint8_t *)"Extern interrupt!\n\r", sizeof("Extern interrupt!\n\r"));
+
+//    char buf[10]={0};
+//
+//    UART_TX((uint8_t *)buf, sprintf(buf,"%u\r\n", HAL_GetTick()));
   dmpDataReady();
 }
